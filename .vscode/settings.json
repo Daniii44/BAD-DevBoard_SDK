@@ -1,0 +1,13 @@
+{
+  "C_Cpp.intelliSenseEngine": "Tag Parser",
+  "cSpell.words": [
+    "ATTINY",
+    "GPIO",
+    "JTCK",
+    "JTDI",
+    "JTDO",
+    "JTMS",
+    "NJTRST",
+    "VOUT"
+  ]
+}
