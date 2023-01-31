@@ -9,5 +9,10 @@
     "JTMS",
     "NJTRST",
     "VOUT"
-  ]
+  ],
+  "files.associations": {
+    "bdb_timing.h": "c",
+    "esp_timer.h": "c",
+    "ets_sys.h": "c"
+  }
 }
