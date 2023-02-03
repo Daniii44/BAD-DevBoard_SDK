@@ -36,7 +36,8 @@
         "*.inc": "c",
         "stdlib.h": "c",
         "freertos.h": "c",
-        "bdb_tpi_physical.h": "c"
+        "bdb_tpi_physical.h": "c",
+        "baddude_protocol.h": "c"
     },
     "cSpell.words": [
         "baddude",
