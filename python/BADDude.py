@@ -2,6 +2,8 @@ from BADDudeClient import BADDudeClient
 from enum import Enum
 from elftools.elf.elffile import ELFFile
 
+ATTINY20_FLASH_SIZE = 2048
+
 
 class BADDudeCommand(Enum):
     BADDUDE_CMD_Flash = "f"
@@ -32,6 +34,17 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
             with open("main", 'rb') as f:
                 elfFile = ELFFile(f)
                 programData = extractFlashData(elfFile)
+
+            print(
+                "Program size:",
+                str(len(programData)) + "/" + str(ATTINY20_FLASH_SIZE),
+                "bytes",
+                "(" + str(round(len(programData)/ATTINY20_FLASH_SIZE*100)) + "%)"
+            )
+
+            if (len(programData) > ATTINY20_FLASH_SIZE):
+                print("Program too large")
+                return
 
             client.tpiEnter()
             print("Entered TPI mode")
