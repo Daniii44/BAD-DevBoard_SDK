@@ -1,2 +1,8 @@
 # BAD-DevBoard_SDK
 This repository contains the Software Development Kit for the BAD-DevBoard (BDB).
+
+## Installation
+It's necessary to add an environment variable called BDB_SDK_PATH which contatins the path to your installation
+
+> # BAD-DevBoard-SDK
+> export BDB_SDK_PATH="path/to/your/installation)"

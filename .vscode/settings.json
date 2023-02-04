@@ -13,6 +13,8 @@
   "files.associations": {
     "bdb_timing.h": "c",
     "esp_timer.h": "c",
-    "ets_sys.h": "c"
+    "ets_sys.h": "c",
+    "bdb_tpi_access.h": "c",
+    "bdb_tpi_physical.h": "c"
   }
 }
