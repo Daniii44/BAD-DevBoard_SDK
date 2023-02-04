@@ -11,10 +11,7 @@
                 "${config:idf.espAdfPath}/components/**",
                 "${config:idf.espAdfPathWin}/components/**",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/build/config",
-                "/Users/danielgruber/.BAD-DevBoard_SDK/BDBFoundation/src",
-                "/Users/danielgruber/.BAD-DevBoard_SDK/BDBFoundation/src/BDB_Utilities",
-                "/Users/danielgruber/.BAD-DevBoard_SDK/BDBTPI/src"
+                "${BDB_SDK_PATH}/components/**"
             ],
             "browse": {
                 "path": [
