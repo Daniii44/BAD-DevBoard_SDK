@@ -9,7 +9,7 @@ class BADDudeCommand(Enum):
     BADDUDE_CMD_DumpFlash = "d"
     BADDUDE_CMD_Reset = "r"
     BADDUDE_CMD_RunCustomProgram = "c"
-    BADDUDE_CMD_Exit = "e"
+    BADDUDE_CMD_Quit = "q"
     BADDUDE_CMD_HELP = "h"
 
     def help():
@@ -18,7 +18,11 @@ class BADDudeCommand(Enum):
         print("d: Dump Flash")
         print("r: Reset")
         print("c: Run Custom Program")
-        print("e: Exit")
+        print("q: Quit")
+
+    @classmethod
+    def _missing_(cls, value):
+        return BADDudeCommand.BADDUDE_CMD_Quit
 
 
 def pollNextCommand() -> BADDudeCommand:
@@ -157,7 +161,7 @@ if __name__ == "__main__":
 
     while True:
         nextCommand = pollNextCommand()
-        if (nextCommand == BADDudeCommand.BADDUDE_CMD_Exit):
+        if (nextCommand == BADDudeCommand.BADDUDE_CMD_Quit):
             break
 
         manageCommand(nextCommand, client)
