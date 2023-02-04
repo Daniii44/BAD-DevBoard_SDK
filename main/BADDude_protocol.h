@@ -2,6 +2,7 @@
 #define _BADDUDE_PROTOCOL_H
 
 #define BADDUDE_MAX_CHUNK_SIZE 64
+#define BADDUDE_START_KEY 0x89ABCDEF
 
 typedef enum
 {
@@ -19,7 +20,8 @@ typedef enum
     BADDUDE_CMD_FERASE = 0x21,
     BADDUDE_CMD_FWRITE = 0x22,
     BADDUDE_CMD_FWPROG = 0x23,
-    BADDUDE_START_KEY = 0x89ABCDEF,
+
+    BADDUDE_CMD_ATRESET = 0x30,
 } baddude_cmd_t;
 
 #endif // _BADDUDE_PROTOCOL_H

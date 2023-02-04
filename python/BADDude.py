@@ -8,6 +8,7 @@ class BADDudeCommand(Enum):
     BADDUDE_CMD_Reset = "r"
     BADDUDE_CMD_RunCustomProgram = "c"
     BADDUDE_CMD_Exit = "e"
+    BADDUDE_CMD_HELP = "h"
 
     def help():
         print("Command Help List:")
@@ -18,9 +19,7 @@ class BADDudeCommand(Enum):
 
 
 def pollNextCommand() -> BADDudeCommand:
-    print("\nSelect a command:")
-    BADDudeCommand.help()
-
+    print("\nSelect a command (h for help)")
     command = input("> ")
     print()
 
@@ -52,9 +51,12 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
             client.tpiExit()
             print("Exited TPI mode")
         case BADDudeCommand.BADDUDE_CMD_Reset:
-            print("not implemented yet")
+            client.attinyReset()
+            print("ATtiny reset")
         case BADDudeCommand.BADDUDE_CMD_RunCustomProgram:
             print("not implemented yet")
+        case BADDudeCommand.BADDUDE_CMD_HELP:
+            BADDudeCommand.help()
 
 
 def extractFlashData(elfFile: ELFFile) -> bytes:

@@ -58,3 +58,8 @@ operands:
 mnemonic: FWPROG
 opcode: 0x23
     1. progress percentage (0 = 0% / 255 = 100%)
+
+# IO
+## ATTiny Reset
+mnemonic: ATRESET
+opcode: 0x30

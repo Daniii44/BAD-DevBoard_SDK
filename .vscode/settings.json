@@ -37,9 +37,12 @@
         "stdlib.h": "c",
         "freertos.h": "c",
         "bdb_tpi_physical.h": "c",
-        "baddude_protocol.h": "c"
+        "baddude_protocol.h": "c",
+        "bdb_tpi_access.h": "c"
     },
     "cSpell.words": [
+        "ATRESET",
+        "attiny",
         "baddude",
         "BADDUDE",
         "FERASE",

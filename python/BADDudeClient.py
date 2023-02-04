@@ -23,6 +23,8 @@ BADDUDE_CMD_FERASE = 0x21
 BADDUDE_CMD_FWRITE = 0x22
 BADDUDE_CMD_FWPROG = 0x23
 
+BADDUDE_CMD_ATRESET = 0x30
+
 
 class BADDudeClient:
     _ser: serial.Serial
@@ -43,6 +45,10 @@ class BADDudeClient:
 
     def ping(self, verbose=True):
         self._writeInt8(BADDUDE_CMD_PING)
+        self._pollAck()
+
+    def attinyReset(self):
+        self._writeInt8(BADDUDE_CMD_ATRESET)
         self._pollAck()
 
     def tpiEnter(self):

@@ -17,6 +17,11 @@
 
 #include "BADDude_protocol.h"
 
+//TODO: move this to BDBFoundation
+#define ATTINY_RESET_ACTIVE_LEVEL 1 // The actual level applied to the #RESET pin of the ATTiny is inverted by a mosfet
+#define t_TOUT_US 256*1000           // Time-out after reset
+#define t_RST_US 1                   // Minimum pulse width on RESET Pin
+
 void BADDUDE_acknowledge(){
     uint8_t ack = BADDUDE_CMD_ACK;
     usb_serial_jtag_write_bytes(&ack,1,portMAX_DELAY);
@@ -44,10 +49,16 @@ void app_main(void)
     uint32_t startKey = BADDUDE_START_KEY;
     usb_serial_jtag_write_bytes(&startKey,4,portMAX_DELAY);
 
+    gpio_set_direction(BDB_ESP_ATTINY_RESET_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_level(BDB_ESP_ATTINY_RESET_PIN,ATTINY_RESET_ACTIVE_LEVEL);
+    BDB_delayMicroseconds(t_RST_US);
+    gpio_set_level(BDB_ESP_ATTINY_RESET_PIN,!ATTINY_RESET_ACTIVE_LEVEL);
+
     for(;;){
         uint8_t opcode;
         usb_serial_jtag_read_bytes(&opcode,1,portMAX_DELAY);
 
+        //TODO: use a switch case statement
         if (opcode == BADDUDE_CMD_PING){
             BADDUDE_acknowledge();
         }
@@ -97,6 +108,13 @@ void app_main(void)
             BADDUDE_fwprog(0xFF);
             
             free(buf);
+        }
+        else if (opcode == BADDUDE_CMD_ATRESET){
+            gpio_set_level(BDB_ESP_ATTINY_RESET_PIN,ATTINY_RESET_ACTIVE_LEVEL);
+            BDB_delayMicroseconds(t_RST_US);
+            gpio_set_level(BDB_ESP_ATTINY_RESET_PIN,!ATTINY_RESET_ACTIVE_LEVEL);
+            BDB_delayMicroseconds(t_TOUT_US);
+            BADDUDE_acknowledge();
         }
     }
 }
