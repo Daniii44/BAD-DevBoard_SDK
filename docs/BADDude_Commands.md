@@ -59,6 +59,10 @@ mnemonic: FWPROG
 opcode: 0x23
     1. progress percentage (0 = 0% / 255 = 100%)
 
+## Flash Read
+mnemonic: FRead
+opcode: 0x2A
+
 # IO
 ## ATTiny Reset
 mnemonic: ATRESET

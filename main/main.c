@@ -21,6 +21,8 @@
 #define ATTINY_RESET_ACTIVE_LEVEL 1 // The actual level applied to the #RESET pin of the ATTiny is inverted by a mosfet
 #define t_TOUT_US 256*1000           // Time-out after reset
 #define t_RST_US 1                   // Minimum pulse width on RESET Pin
+#define ATTINY_MEMORY_FLASH_ADDR 0x4000
+#define ATTINY_MEMORY_FLASH_SIZE 0x0800
 
 void BADDUDE_acknowledge(){
     uint8_t ack = BADDUDE_CMD_ACK;
@@ -34,6 +36,11 @@ void BADDUDE_fwprog(uint8_t progress){
 void BADDUDE_nextChunk(){
     uint8_t nextChunk = BADDUDE_CMD_NEXTCHUNK;
     usb_serial_jtag_write_bytes(&nextChunk,1,portMAX_DELAY);
+}
+void BADDUE_pollNextChunk(){
+    uint8_t nextChunk = 0;
+    while(nextChunk != BADDUDE_CMD_NEXTCHUNK)
+        usb_serial_jtag_read_bytes(&nextChunk,1,portMAX_DELAY);
 }
 
 void app_main(void)
@@ -85,8 +92,9 @@ void app_main(void)
             uint32_t size = 0;
             usb_serial_jtag_read_bytes(&size,2,portMAX_DELAY);
 
-            uint8_t* buf = malloc(2048);
-            memset(buf, 0xFF, 2048);
+            //Receive Data
+            uint8_t* buf = malloc(ATTINY_MEMORY_FLASH_SIZE);
+            memset(buf, 0xFF, ATTINY_MEMORY_FLASH_SIZE);
             for(int i = 0; i < size; i += BADDUDE_MAX_CHUNK_SIZE){
                 if((size - i) < BADDUDE_MAX_CHUNK_SIZE)
                     usb_serial_jtag_read_bytes(buf + i,(size - i),portMAX_DELAY);
@@ -96,17 +104,28 @@ void app_main(void)
             }
             BADDUDE_acknowledge();
 
-            TPI_writeTPIPointer(0x4000);
-
-            for(uint32_t i = 0; i < size/4;i++){
-                TPI_writeFlashNoPolling(*(uint32_t*)&(buf[i*4]));
-                BADDUDE_fwprog((uint8_t)((i*4*0xFF)/size));
+            //Write Data
+            TPI_writeTPIPointer(ATTINY_MEMORY_FLASH_ADDR);
+            for(uint32_t i = 0; i < size;i+=4){
+                TPI_writeFlashNoPolling(*(uint32_t*)&(buf[i]));
+                BADDUDE_fwprog((uint8_t)(((i*0xFF)/size)));
                 while(TPI_getNVMBUSY());
             }
-            if(size % 4 != 0)
-                TPI_writeFlash(*(uint32_t*)&(buf[size/4+1]));
             BADDUDE_fwprog(0xFF);
             
+            free(buf);
+        }
+        else if (opcode == BADDUDE_CMD_FRead){
+            BADDUDE_acknowledge();
+            uint8_t* buf = malloc(BADDUDE_MAX_CHUNK_SIZE);
+
+            for(int i = 0; i < ATTINY_MEMORY_FLASH_SIZE; i += BADDUDE_MAX_CHUNK_SIZE){
+                TPI_readFlash(buf,ATTINY_MEMORY_FLASH_ADDR+i,BADDUDE_MAX_CHUNK_SIZE);
+                if (i != 0)
+                    BADDUE_pollNextChunk();
+                usb_serial_jtag_write_bytes(buf,BADDUDE_MAX_CHUNK_SIZE,portMAX_DELAY);
+            }
+
             free(buf);
         }
         else if (opcode == BADDUDE_CMD_ATRESET){

@@ -1,12 +1,12 @@
 from BADDudeClient import BADDudeClient
+from BADDudeDefines import *
 from enum import Enum
 from elftools.elf.elffile import ELFFile
-
-ATTINY20_FLASH_SIZE = 2048
 
 
 class BADDudeCommand(Enum):
     BADDUDE_CMD_Flash = "f"
+    BADDUDE_CMD_DumpFlash = "d"
     BADDUDE_CMD_Reset = "r"
     BADDUDE_CMD_RunCustomProgram = "c"
     BADDUDE_CMD_Exit = "e"
@@ -15,6 +15,7 @@ class BADDudeCommand(Enum):
     def help():
         print("Command Help List:")
         print("f: Flash")
+        print("d: Dump Flash")
         print("r: Reset")
         print("c: Run Custom Program")
         print("e: Exit")
@@ -37,12 +38,12 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
 
             print(
                 "Program size:",
-                str(len(programData)) + "/" + str(ATTINY20_FLASH_SIZE),
+                str(len(programData)) + "/" + str(ATTINY_MEMORY_FLASH_SIZE),
                 "bytes",
-                "(" + str(round(len(programData)/ATTINY20_FLASH_SIZE*100)) + "%)"
+                "(" + str(round(len(programData)/ATTINY_MEMORY_FLASH_SIZE*100)) + "%)"
             )
 
-            if (len(programData) > ATTINY20_FLASH_SIZE):
+            if (len(programData) > ATTINY_MEMORY_FLASH_SIZE):
                 print("Program too large")
                 return
 
@@ -52,6 +53,8 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
             print("Primed flash")
             client.flashErase()
             print("Erased flash")
+
+            # Write the program data
             client.flashWrite(
                 programData,
                 lambda progress:
@@ -61,6 +64,56 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
                           )
             )
             print()
+
+            # Verify the program data
+            def verifyFlashData(startAddr: int, readFlashData: bytes):
+                flashImage = \
+                    programData + \
+                    bytes(
+                        bytearray(
+                            [0xFF]*(ATTINY_MEMORY_FLASH_SIZE -
+                                    len(programData))
+                        )
+                    )
+
+                flashSpaceAddr = startAddr - ATTINY_MEMORY_FLASH_ADDR
+
+                if (readFlashData != flashImage[flashSpaceAddr:flashSpaceAddr+len(readFlashData)]):
+                    print("Verification failed at address", hex(startAddr))
+                    print(readFlashData.hex(sep=" ", bytes_per_sep=1))
+                    print(flashImage[flashSpaceAddr:flashSpaceAddr +
+                          len(readFlashData)].hex(sep=" ", bytes_per_sep=1))
+                    exit(1)
+                else:
+                    print(
+                        "Verifying:",
+                        str(round((flashSpaceAddr+BADDUDE_MAX_CHUNK_SIZE) /
+                            ATTINY_MEMORY_FLASH_SIZE*100)) + "%",
+                        end="\r"
+                    )
+
+            client.flashDump(verifyFlashData)
+            print()
+
+            client.tpiExit()
+            print("Exited TPI mode")
+        case BADDudeCommand.BADDUDE_CMD_DumpFlash:
+            client.tpiEnter()
+            print("Entered TPI mode")
+            client.flashPrime()
+            print("Primed flash")
+
+            def printFlashData(startAddr: int, flashData: bytes):
+                columnWidth = 16
+                for i in range(int(BADDUDE_MAX_CHUNK_SIZE/columnWidth)):
+                    rowFlashData = flashData[i * columnWidth:(i+1)*columnWidth]
+                    print(
+                        hex(startAddr + i*columnWidth) + ":",
+                        rowFlashData.hex(sep=" ", bytes_per_sep=1)
+                    )
+
+            print("Flash Dump:")
+            client.flashDump(printFlashData)
             client.tpiExit()
             print("Exited TPI mode")
         case BADDudeCommand.BADDUDE_CMD_Reset:

@@ -21,6 +21,8 @@ typedef enum
     BADDUDE_CMD_FWRITE = 0x22,
     BADDUDE_CMD_FWPROG = 0x23,
 
+    BADDUDE_CMD_FRead = 0x2A,
+
     BADDUDE_CMD_ATRESET = 0x30,
 } baddude_cmd_t;
 
