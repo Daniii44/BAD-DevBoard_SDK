@@ -3,9 +3,10 @@
     "idf.openOcdConfigs": [
         "board/esp32s3-builtin.cfg"
     ],
-    "idf.port": "/dev/cu.usbmodem1101",
+    "idf.port": "/dev/cu.usbmodem2101",
     "idf.flashType": "UART",
     "files.associations": {
+        "README": "markdown",
         "esp_log.h": "c",
         "gpio.h": "c",
         "esp_types.h": "c",
@@ -44,7 +45,9 @@
         "string_view": "c",
         "initializer_list": "c",
         "regex": "c",
-        "utility": "c"
+        "utility": "c",
+        "bdb_attiny_reset.h": "c",
+        "bdb_attiny_def.h": "c"
     },
     "cSpell.words": [
         "ATRESET",

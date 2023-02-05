@@ -2,19 +2,29 @@
   "C_Cpp.intelliSenseEngine": "Tag Parser",
   "cSpell.words": [
     "ATTINY",
+    "CALIBRATIONBITS",
+    "CONFIGURATIONBITS",
+    "DEVICEIDBITS",
     "GPIO",
+    "IOSPACE",
     "JTCK",
     "JTDI",
     "JTDO",
     "JTMS",
     "NJTRST",
+    "NVMLOCKBITS",
     "VOUT"
   ],
   "files.associations": {
+    "README": "markdown",
     "bdb_timing.h": "c",
     "esp_timer.h": "c",
     "ets_sys.h": "c",
     "bdb_tpi_access.h": "c",
-    "bdb_tpi_physical.h": "c"
+    "bdb_tpi_physical.h": "c",
+    "bdb_esp_led.h": "c",
+    "bdb_esp_pins.h": "c",
+    "gpio.h": "c",
+    "bdb_attiny_def.h": "c"
   }
 }

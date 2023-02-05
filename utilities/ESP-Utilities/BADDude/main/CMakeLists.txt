@@ -1,4 +1,4 @@
 idf_component_register(SRCS "main.c"
     INCLUDE_DIRS "."
-    REQUIRES BDBFoundation BDBTPI
+    REQUIRES BDBFoundation BDBATtiny
 )

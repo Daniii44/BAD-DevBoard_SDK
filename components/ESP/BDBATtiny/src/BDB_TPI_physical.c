@@ -2,28 +2,25 @@
 #include "driver/gpio.h"
 #include "BDB_ESP_Pins.h"
 #include "BDB_Timing.h"
+#include "BDB_ATtiny_def.h"
+#include "BDB_ATtiny_Reset.h"
 
 #define T_HALF_CYCLE_PERIOD_US 1
-#define t_TOUT_US 256*1000           // Time-out after reset
-#define t_RST_US 1                   // Minimum pulse width on RESET Pin
 #define TPI_FRAME_SIZE 12
 
-#define ATTINY_RESET_ACTIVE_LEVEL 1 // The actual level applied to the #RESET pin of the ATTiny is inverted by a mosfet
-
 void TPI_PHY_init(){
-    gpio_set_direction(BDB_ESP_ATTINY_RESET_PIN, GPIO_MODE_OUTPUT);
+    BDB_ATtiny_InitReset();
+
     gpio_set_direction(BDB_ESP_ATTINY_TPIDATA_PIN, GPIO_MODE_OUTPUT);
     gpio_set_direction(BDB_ESP_ATTINY_TPICLK_PIN, GPIO_MODE_OUTPUT);
-
-    gpio_set_level(BDB_ESP_ATTINY_RESET_PIN, ATTINY_RESET_ACTIVE_LEVEL);
     gpio_set_level(BDB_ESP_ATTINY_TPIDATA_PIN, 0);
     gpio_set_level(BDB_ESP_ATTINY_TPICLK_PIN, 0);
 }
 void TPI_enter(){
     //Firstly, enable the ATTiny quickly to securely put it into reset mode afterwards
-    gpio_set_level(BDB_ESP_ATTINY_RESET_PIN, !ATTINY_RESET_ACTIVE_LEVEL);
+    BDB_ATtiny_ReleaseReset();
     BDB_delayMicroseconds(t_TOUT_US);
-    gpio_set_level(BDB_ESP_ATTINY_RESET_PIN, ATTINY_RESET_ACTIVE_LEVEL);
+    BDB_ATtiny_ApplyReset();
     BDB_delayMicroseconds(t_RST_US);
 
     for(int i = 0; i < 16;i++){
@@ -31,18 +28,18 @@ void TPI_enter(){
     }
 }
 void TPI_exit(bool releaseReset){
-    gpio_set_level(BDB_ESP_ATTINY_RESET_PIN, !ATTINY_RESET_ACTIVE_LEVEL);
+    BDB_ATtiny_ReleaseReset();
     BDB_delayMicroseconds(t_TOUT_US);
-    gpio_set_level(BDB_ESP_ATTINY_RESET_PIN, ATTINY_RESET_ACTIVE_LEVEL);
+    BDB_ATtiny_ApplyReset();
     BDB_delayMicroseconds(t_RST_US);
     if(releaseReset){
-        gpio_set_level(BDB_ESP_ATTINY_RESET_PIN, !ATTINY_RESET_ACTIVE_LEVEL);
+        BDB_ATtiny_ReleaseReset();
         BDB_delayMicroseconds(t_TOUT_US);
     }
 }
 void TPI_PHY_deinit(bool deinitReset){
     if(deinitReset)
-        gpio_set_direction(BDB_ESP_ATTINY_RESET_PIN, GPIO_MODE_DEF_DISABLE);
+        BDB_ATtiny_DeinitReset();
     gpio_set_direction(BDB_ESP_ATTINY_TPIDATA_PIN, GPIO_MODE_DEF_DISABLE);
     gpio_set_direction(BDB_ESP_ATTINY_TPICLK_PIN, GPIO_MODE_DEF_DISABLE);
 }
