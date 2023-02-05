@@ -4,7 +4,7 @@
 typedef struct
 {
     int (*getCustomProgramCount)();
-    char *(*getCustomProgramTitle)(int);
+    const char *(*getCustomProgramTitle)(int);
     void (*runCustomProgram)(int);
 } baddude_callback_t;
 

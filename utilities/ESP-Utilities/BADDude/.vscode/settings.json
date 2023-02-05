@@ -47,13 +47,17 @@
         "regex": "c",
         "utility": "c",
         "bdb_attiny_reset.h": "c",
-        "bdb_attiny_def.h": "c"
+        "bdb_attiny_def.h": "c",
+        "bdb_baddude.h": "c"
     },
     "cSpell.words": [
         "ATRESET",
         "attiny",
         "baddude",
         "BADDUDE",
+        "CPCNT",
+        "CPRUN",
+        "CPTITLE",
         "DUMPFLASH",
         "elffile",
         "elftools",

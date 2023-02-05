@@ -27,6 +27,10 @@ BADDUDE_LL_CMD_FREAD = 0x2A
 
 BADDUDE_CMD_ATRESET = 0x30
 
+BADDUDE_CMD_CPCNT = 0x40
+BADDUDE_CMD_CPTITLE = 0x41
+BADDUDE_CMD_CPRUN = 0x42
+
 
 class BADDudeClient:
     _ser: serial.Serial
@@ -90,6 +94,29 @@ class BADDudeClient:
             bytes = self._readBytes(BADDUDE_MAX_CHUNK_SIZE)
             self._writeInt8(BADDUDE_LL_CMD_NEXTCHUNK)
             progressCallback(addr, bytes)
+
+    def getCustomProgramCount(self) -> int:
+        self._writeInt8(BADDUDE_CMD_CPCNT)
+        self._pollAck()
+        return self._readInt8()
+
+    def getCustomProgramTitle(self, programID: int) -> str:
+        self._writeInt8(BADDUDE_CMD_CPTITLE)
+        self._writeInt8(programID)
+        self._pollAck()
+
+        title = ""
+        while True:
+            receivedByte = self._readBytes(1)
+            if receivedByte == b'\x00':
+                return title
+            else:
+                title += receivedByte.decode("utf-8")
+
+    def runCustomProgram(self, programID: int):
+        self._writeInt8(BADDUDE_CMD_CPRUN)
+        self._writeInt8(programID)
+        self._pollAck()
 
     def _pollStartKey(self):
         remainingKey = BADDUDE_STARTKEY

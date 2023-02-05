@@ -30,6 +30,8 @@
     "usb_serial_jtag.h": "c",
     "bdb_foundation.h": "c",
     "bdb_baddude.h": "c",
-    "bdb_attiny_reset.h": "c"
+    "bdb_attiny_reset.h": "c",
+    "bdb_baddude_protocol.h": "c",
+    "*.ipp": "c"
   }
 }

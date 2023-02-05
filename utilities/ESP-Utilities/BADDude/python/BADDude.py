@@ -124,7 +124,11 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
             client.attinyReset()
             print("ATtiny reset")
         case BADDudeCommand.BADDUDE_CMD_RunCustomProgram:
-            print("not implemented yet")
+            programCount = client.getCustomProgramCount()
+            print("Select a program:")
+            for i in range(programCount):
+                print(str(i) + ": " + client.getCustomProgramTitle(i))
+            client.runCustomProgram(int(input("> ")))
         case BADDudeCommand.BADDUDE_CMD_HELP:
             BADDudeCommand.help()
 

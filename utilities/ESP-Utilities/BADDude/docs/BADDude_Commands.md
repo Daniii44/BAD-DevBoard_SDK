@@ -57,6 +57,7 @@ operands:
 ## Flash Write Progress
 mnemonic: FWPROG
 opcode: 0x23
+operands:
     1. progress percentage (0 = 0% / 255 = 100%)
 
 ## Flash Read
@@ -67,3 +68,23 @@ opcode: 0x2A
 ## ATTiny Reset
 mnemonic: ATRESET
 opcode: 0x30
+
+# Custom Programs
+## Custom Program Count
+mnemonic: CPCNT
+opcode: 0x40
+
+## Custom Program Title
+mnemonic: CPTITLE
+opcode: 0x41
+operands:
+    1. programID
+returns:
+    1. ACK
+    2. null terminated string upto a size of MAX Chunk Size
+
+## Custom Program Run
+mnemonic: CPRUN
+opcode: 0x42
+operands:
+    1. programID

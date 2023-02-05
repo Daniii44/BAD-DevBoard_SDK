@@ -17,19 +17,20 @@
 #include "BDB_ATtiny_Reset.h"
 
 
-static baddude_callback_t baddudeCallback;
+static baddude_callback_t *baddudeCallback;
 
 static void BADDude_setup();
 static void BADDude_loop();
 
 static void BADDUDE_acknowledge();
+static void BADDUDE_notAcknowledge();
 static void BADDUDE_fwprog(uint8_t progress);
 static void BADDUDE_nextChunk();
 static void BADDUE_pollNextChunk();
 
 
 void BADDude_start(baddude_callback_t* baddude_callback){
-    baddudeCallback = *baddude_callback;
+    baddudeCallback = baddude_callback;
 
     BADDude_setup();
     for(;;){
@@ -121,22 +122,66 @@ void BADDude_loop(){
         BDB_ATtiny_Reset();
         BADDUDE_acknowledge();
     }
+    else if (opcode == BADDUDE_CMD_CPCNT){
+        BADDUDE_acknowledge();
+
+        uint8_t count = 0;
+        if(baddudeCallback != NULL)
+            count = baddudeCallback->getCustomProgramCount();
+        
+        usb_serial_jtag_write_bytes(&count,1,portMAX_DELAY);
+    }
+    else if (opcode == BADDUDE_CMD_CPTITLE){
+        uint8_t programID;
+        usb_serial_jtag_read_bytes(&programID,1,portMAX_DELAY);
+
+        if(baddudeCallback == NULL){
+            BADDUDE_notAcknowledge();
+            return; //TODO: use a switch statement and use break
+        }
+        BADDUDE_acknowledge();
+
+        const char* title = baddudeCallback->getCustomProgramTitle(programID);
+        uint8_t nullTermination = 0;
+        uint8_t length = strlen(title);
+        if(length > BADDUDE_MAX_CHUNK_SIZE-1)
+            length = BADDUDE_MAX_CHUNK_SIZE-1;
+        
+        usb_serial_jtag_write_bytes(title,length,portMAX_DELAY);
+        usb_serial_jtag_write_bytes(&nullTermination,1,portMAX_DELAY);
+    }
+    else if (opcode == BADDUDE_CMD_CPRUN){
+        uint8_t programID;
+        usb_serial_jtag_read_bytes(&programID,1,portMAX_DELAY);
+
+        if(baddudeCallback == NULL){
+            BADDUDE_notAcknowledge();
+            return; //TODO: use a switch statement and use break
+        }
+        BADDUDE_acknowledge();
+
+        baddudeCallback->runCustomProgram(programID);
+    }
 }
 
-void BADDUDE_acknowledge(){
+static void BADDUDE_acknowledge(){
     uint8_t ack = BADDUDE_CMD_ACK;
     usb_serial_jtag_write_bytes(&ack,1,portMAX_DELAY);
 }
-void BADDUDE_fwprog(uint8_t progress){
+static void BADDUDE_notAcknowledge(){
+    uint8_t nack = BADDUDE_CMD_NACK;
+    usb_serial_jtag_write_bytes(&nack,1,portMAX_DELAY);
+}
+static void BADDUDE_fwprog(uint8_t progress){
     uint8_t fwprog = BADDUDE_CMD_FWPROG;
     usb_serial_jtag_write_bytes(&fwprog,1,portMAX_DELAY);
     usb_serial_jtag_write_bytes(&progress,1,portMAX_DELAY);
 }
-void BADDUDE_nextChunk(){
+static void BADDUDE_nextChunk(){
     uint8_t nextChunk = BADDUDE_CMD_NEXTCHUNK;
     usb_serial_jtag_write_bytes(&nextChunk,1,portMAX_DELAY);
 }
-void BADDUE_pollNextChunk(){
+static void BADDUE_pollNextChunk(){
     uint8_t nextChunk = 0;
     while(nextChunk != BADDUDE_CMD_NEXTCHUNK)
         usb_serial_jtag_read_bytes(&nextChunk,1,portMAX_DELAY);
