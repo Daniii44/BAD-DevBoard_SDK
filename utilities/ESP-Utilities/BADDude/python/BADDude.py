@@ -128,7 +128,19 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
             print("Select a program:")
             for i in range(programCount):
                 print(str(i) + ": " + client.getCustomProgramTitle(i))
-            client.runCustomProgram(int(input("> ")))
+
+            programToRun = int(input("> "))
+
+            print(
+                "\nProgram Trace for \"" +
+                client.getCustomProgramTitle(programToRun) +
+                "\":"
+            )
+            client.runCustomProgram(
+                programToRun,
+                lambda str: print(str, end="")
+            )
+            print("Program finished")
         case BADDudeCommand.BADDUDE_CMD_HELP:
             BADDudeCommand.help()
 

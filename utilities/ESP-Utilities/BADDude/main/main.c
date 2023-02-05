@@ -47,9 +47,11 @@ void runCustomProgram(int programID){
     switch (programID){
         case 0: // LED ON
             ESP_LED_setState(ESP_LED_ON);
+            ESP_LOGI("ESP","LED is ON");
             break;
         case 1: // LED OFF
             ESP_LED_setState(ESP_LED_OFF);
+            ESP_LOGI("ESP","LED is OFF");
             break;
     }
 }

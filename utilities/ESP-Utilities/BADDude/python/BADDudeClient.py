@@ -6,7 +6,8 @@ import glob
 
 BADDUDE_BAUDRATE = 115200
 
-BADDUDE_STARTKEY = 0x89ABCDEF
+BADDUDE_START_KEY = 0x89ABCDEF
+BADDUDE_CPCPLT_KEY = 0xC0C1C2C3
 
 
 BADDUDE_LL_CMD_NOP = 0x00
@@ -113,13 +114,23 @@ class BADDudeClient:
             else:
                 title += receivedByte.decode("utf-8")
 
-    def runCustomProgram(self, programID: int):
+    def runCustomProgram(self, programID: int, traceCallback: Callable[[str], None]):
         self._writeInt8(BADDUDE_CMD_CPRUN)
         self._writeInt8(programID)
         self._pollAck()
 
+        remainingKey = BADDUDE_CPCPLT_KEY
+        while True:
+            receivedByte = self._readInt8()
+            if receivedByte == remainingKey & 0xFF:
+                remainingKey = remainingKey >> 8
+                if remainingKey == 0:
+                    return
+            else:
+                traceCallback(bytes([receivedByte]).decode("utf-8"))
+
     def _pollStartKey(self):
-        remainingKey = BADDUDE_STARTKEY
+        remainingKey = BADDUDE_START_KEY
         while True:
             receivedByte = self._readInt8()
             if receivedByte == (remainingKey & 0xFF):
@@ -127,7 +138,7 @@ class BADDudeClient:
                 if remainingKey == 0:
                     return
             else:
-                remainingKey = BADDUDE_STARTKEY
+                remainingKey = BADDUDE_START_KEY
 
     def _pollAck(self):
         while True:

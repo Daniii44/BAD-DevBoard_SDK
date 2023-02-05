@@ -1,8 +1,13 @@
 # Definitions
 Max Chunk Size: 64 Bytes
 
-# Start Key
+# Keys
+## Start Key
 32 bits: 0x89ABCDEF
+
+## Custom Prgram Completion Key
+abbreviation: CPCPLT_KEY
+32 bits: 0xC0C1C2C3
 
 # Commands
 ## No Operation

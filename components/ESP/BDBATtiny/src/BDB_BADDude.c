@@ -161,6 +161,9 @@ void BADDude_loop(){
         BADDUDE_acknowledge();
 
         baddudeCallback->runCustomProgram(programID);
+
+        uint32_t cpcpltKey = BADDUDE_CPCPLT_KEY;
+        usb_serial_jtag_write_bytes(&cpcpltKey,4,portMAX_DELAY);
     }
 }
 

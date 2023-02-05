@@ -3,6 +3,7 @@
 
 #define BADDUDE_MAX_CHUNK_SIZE 64
 #define BADDUDE_START_KEY 0x89ABCDEF
+#define BADDUDE_CPCPLT_KEY 0xC0C1C2C3
 
 typedef enum
 {
