@@ -2,6 +2,7 @@ from BADDudeClient import BADDudeClient
 from BADDudeDefines import *
 from enum import Enum
 from elftools.elf.elffile import ELFFile
+import sys
 
 
 class BADDudeCommand(Enum):
@@ -174,6 +175,10 @@ if __name__ == "__main__":
     selectedPort = selectPort(portList)
     client.begin(selectedPort)
     print("Successfully Connected to " + selectedPort)
+
+    args = sys.argv
+    if (args[1] == "-f"):
+        manageCommand(BADDudeCommand.BADDUDE_CMD_Flash, client)
 
     while True:
         nextCommand = pollNextCommand()
