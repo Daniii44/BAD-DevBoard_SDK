@@ -32,6 +32,10 @@
     "bdb_baddude.h": "c",
     "bdb_attiny_reset.h": "c",
     "bdb_baddude_protocol.h": "c",
-    "*.ipp": "c"
+    "*.ipp": "c",
+    "cstddef": "c",
+    "array": "c",
+    "string": "c",
+    "string_view": "c"
   }
 }

@@ -28,7 +28,9 @@ typedef enum
 
     BADDUDE_CMD_CPCNT = 0x40,
     BADDUDE_CMD_CPTITLE = 0x41,
-    BADDUDE_CMD_CPRUN = 0x42
+    BADDUDE_CMD_CPRUN = 0x42,
+
+    BADDUDE_CMD_SREAD = 0x50,
 } baddude_cmd_t;
 
 #endif // _BADDUDE_PROTOCOL_H

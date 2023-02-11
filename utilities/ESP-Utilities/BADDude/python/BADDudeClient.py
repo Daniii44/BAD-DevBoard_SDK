@@ -26,11 +26,13 @@ BADDUDE_LL_CMD_FWRITE = 0x22
 BADDUDE_LL_CMD_FWPROG = 0x23
 BADDUDE_LL_CMD_FREAD = 0x2A
 
-BADDUDE_CMD_ATRESET = 0x30
+BADDUDE_LL_CMD_ATRESET = 0x30
 
-BADDUDE_CMD_CPCNT = 0x40
-BADDUDE_CMD_CPTITLE = 0x41
-BADDUDE_CMD_CPRUN = 0x42
+BADDUDE_LL_CMD_CPCNT = 0x40
+BADDUDE_LL_CMD_CPTITLE = 0x41
+BADDUDE_LL_CMD_CPRUN = 0x42
+
+BADDUDE_LL_CMD_SREAD = 0x50
 
 
 class BADDudeClient:
@@ -55,7 +57,7 @@ class BADDudeClient:
         self._pollAck()
 
     def attinyReset(self):
-        self._writeInt8(BADDUDE_CMD_ATRESET)
+        self._writeInt8(BADDUDE_LL_CMD_ATRESET)
         self._pollAck()
 
     def tpiEnter(self):
@@ -97,12 +99,12 @@ class BADDudeClient:
             progressCallback(addr, bytes)
 
     def getCustomProgramCount(self) -> int:
-        self._writeInt8(BADDUDE_CMD_CPCNT)
+        self._writeInt8(BADDUDE_LL_CMD_CPCNT)
         self._pollAck()
         return self._readInt8()
 
     def getCustomProgramTitle(self, programID: int) -> str:
-        self._writeInt8(BADDUDE_CMD_CPTITLE)
+        self._writeInt8(BADDUDE_LL_CMD_CPTITLE)
         self._writeInt8(programID)
         self._pollAck()
 
@@ -115,7 +117,7 @@ class BADDudeClient:
                 title += receivedByte.decode("utf-8")
 
     def runCustomProgram(self, programID: int, traceCallback: Callable[[str], None]):
-        self._writeInt8(BADDUDE_CMD_CPRUN)
+        self._writeInt8(BADDUDE_LL_CMD_CPRUN)
         self._writeInt8(programID)
         self._pollAck()
 
@@ -128,6 +130,14 @@ class BADDudeClient:
                     return
             else:
                 traceCallback(bytes([receivedByte]).decode("utf-8"))
+
+    def readSRAM(self, progressCallback: Callable[[int, bytes], None]) -> bytes:
+        self._writeInt8(BADDUDE_LL_CMD_SREAD)
+        self._pollAck()
+        for addr in range(ATTINY_MEMORY_SRAM_ADDR, ATTINY_MEMORY_SRAM_ADDR + ATTINY_MEMORY_SRAM_SIZE, BADDUDE_MAX_CHUNK_SIZE):
+            bytes = self._readBytes(BADDUDE_MAX_CHUNK_SIZE)
+            self._writeInt8(BADDUDE_LL_CMD_NEXTCHUNK)
+            progressCallback(addr, bytes)
 
     def _pollStartKey(self):
         remainingKey = BADDUDE_START_KEY

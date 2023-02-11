@@ -8,6 +8,7 @@ import sys
 class BADDudeCommand(Enum):
     BADDUDE_CMD_Flash = "f"
     BADDUDE_CMD_DumpFlash = "d"
+    BADDUDE_CMD_DumpSRAM = "s"
     BADDUDE_CMD_Reset = "r"
     BADDUDE_CMD_RunCustomProgram = "c"
     BADDUDE_CMD_Quit = "q"
@@ -17,6 +18,7 @@ class BADDudeCommand(Enum):
         print("Command Help List:")
         print("f: Flash")
         print("d: Dump Flash")
+        print("s: Dump SRAM")
         print("r: Reset")
         print("c: Run Custom Program")
         print("q: Quit")
@@ -32,6 +34,16 @@ def pollNextCommand() -> BADDudeCommand:
     print()
 
     return BADDudeCommand(command)
+
+
+def hexDump(startAddr: int, data: bytes):
+    columnWidth = 16
+    for i in range(int(BADDUDE_MAX_CHUNK_SIZE/columnWidth)):
+        rowData = data[i * columnWidth:(i+1)*columnWidth]
+        print(
+            hex(startAddr + i*columnWidth) + ":",
+            rowData.hex(sep=" ", bytes_per_sep=1)
+        )
 
 
 def manageCommand(command: BADDudeCommand, client: BADDudeClient):
@@ -108,19 +120,21 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
             client.flashPrime()
             print("Primed flash")
 
-            def printFlashData(startAddr: int, flashData: bytes):
-                columnWidth = 16
-                for i in range(int(BADDUDE_MAX_CHUNK_SIZE/columnWidth)):
-                    rowFlashData = flashData[i * columnWidth:(i+1)*columnWidth]
-                    print(
-                        hex(startAddr + i*columnWidth) + ":",
-                        rowFlashData.hex(sep=" ", bytes_per_sep=1)
-                    )
-
             print("Flash Dump:")
-            client.flashDump(printFlashData)
+            client.flashDump(hexDump)
             client.tpiExit()
             print("Exited TPI mode")
+        case BADDudeCommand.BADDUDE_CMD_DumpSRAM:
+            client.tpiEnter()
+            print("Entered TPI mode")
+            client.flashPrime()
+            print("Primed flash")
+
+            print("SRAM Dump:")
+            client.readSRAM(hexDump)
+            client.tpiExit()
+            print("Exited TPI mode")
+
         case BADDudeCommand.BADDUDE_CMD_Reset:
             client.attinyReset()
             print("ATtiny reset")

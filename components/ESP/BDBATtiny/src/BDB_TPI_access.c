@@ -10,6 +10,26 @@
 #define NVMCSR_ADDR 0x32
 #define NVMCSR_NVMBSY_MASK 0x80
 
+//SRAM
+void TPI_readSRAM(uint8_t* buf, uint16_t startTPIPointer, uint16_t size){
+    TPI_writeTPIPointer(startTPIPointer);
+    
+    for(int i = 0; i < size;i++)
+        buf[i] = TPI_SDL(1);
+}
+void TPI_writeSRAM(uint8_t* buf, uint16_t startTPIPointer, uint16_t size){
+    TPI_writeTPIPointer(startTPIPointer);
+
+    for(int i = 0; i < size; i++){
+        TPI_SST(true,buf[i]);
+    }
+}
+void TPI_writeSRAMByte(uint16_t tpiPointer, uint8_t data){
+    TPI_writeTPIPointer(tpiPointer);
+    TPI_SST(false,data);
+}
+
+//Flash
 void TPI_NVM_ChipErase(){
     TPI_NVM_SetCommand(NVM_CMD_CHIP_ERASE);
     TPI_writeTPIPointer(0x4001);

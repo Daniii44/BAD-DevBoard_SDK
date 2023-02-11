@@ -11,6 +11,12 @@ typedef enum{
 } nvm_cmd_t;
 
 
+//SRAM
+void TPI_readSRAM(uint8_t* buf, uint16_t startTPIPointer, uint16_t size);
+void TPI_writeSRAM(uint8_t* buf, uint16_t startTPIPointer, uint16_t size);
+void TPI_writeSRAMByte(uint16_t address, uint8_t data);
+
+//Flash
 void TPI_NVM_ChipErase();
 void TPI_writeTPIPointer(uint16_t tpiPointer);
 void TPI_writeFlash(uint32_t dWord);

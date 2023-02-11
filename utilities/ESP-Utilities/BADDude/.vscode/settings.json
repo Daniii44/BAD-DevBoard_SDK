@@ -3,7 +3,7 @@
     "idf.openOcdConfigs": [
         "board/esp32s3-builtin.cfg"
     ],
-    "idf.port": "/dev/cu.usbmodem2101",
+    "idf.port": "/dev/cu.usbmodem101",
     "idf.flashType": "UART",
     "files.associations": {
         "README": "markdown",
