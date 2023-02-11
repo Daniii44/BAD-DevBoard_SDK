@@ -177,8 +177,9 @@ if __name__ == "__main__":
     print("Successfully Connected to " + selectedPort)
 
     args = sys.argv
-    if (args[1] == "-f"):
-        manageCommand(BADDudeCommand.BADDUDE_CMD_Flash, client)
+    if (len(args) > 1):
+        if (args[1] == "-f"):
+            manageCommand(BADDudeCommand.BADDUDE_CMD_Flash, client)
 
     while True:
         nextCommand = pollNextCommand()
