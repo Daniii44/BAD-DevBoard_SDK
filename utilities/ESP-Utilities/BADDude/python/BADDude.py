@@ -3,6 +3,7 @@ from BADDudeDefines import *
 from enum import Enum
 from elftools.elf.elffile import ELFFile
 import sys
+import math
 
 
 class BADDudeCommand(Enum):
@@ -38,8 +39,8 @@ def pollNextCommand() -> BADDudeCommand:
 
 def hexDump(startAddr: int, data: bytes):
     columnWidth = 16
-    for i in range(int(BADDUDE_MAX_CHUNK_SIZE/columnWidth)):
-        rowData = data[i * columnWidth:(i+1)*columnWidth]
+    for i in range(math.ceil(len(data)/columnWidth)):
+        rowData = data[i * columnWidth:((i+1)*min(columnWidth, len(data)-i))]
         print(
             hex(startAddr + i*columnWidth) + ":",
             rowData.hex(sep=" ", bytes_per_sep=1)
@@ -84,8 +85,7 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
 
             # Verify the program data
             def verifyFlashData(startAddr: int, readFlashData: bytes):
-                flashImage = \
-                    programData + \
+                flashImage = programData + \
                     bytes(
                         bytearray(
                             [0xFF]*(ATTINY_MEMORY_FLASH_SIZE -
@@ -161,8 +161,23 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
 
 
 def extractFlashData(elfFile: ELFFile) -> bytes:
+
+    flashImage = bytearray(ATTINY_MEMORY_FLASH_SIZE)
+    highestAddr = 0
+
     for segment in elfFile.iter_segments():
-        return segment.data()
+        if (segment.header.p_type != "PT_LOAD"):
+            continue
+        if (segment.header.p_filesz == 0):  # BSS segment
+            continue
+
+        startAddr = segment.header.p_paddr
+        endAddr = segment.header.p_paddr + segment.header.p_memsz
+
+        flashImage[startAddr:endAddr] = segment.data()
+        highestAddr = max(highestAddr, endAddr)
+
+    return flashImage[0:highestAddr]
 
 
 def selectPort(portList: list) -> str:
