@@ -140,6 +140,10 @@ def manageCommand(command: BADDudeCommand, client: BADDudeClient):
             print("ATtiny reset")
         case BADDudeCommand.BADDUDE_CMD_RunCustomProgram:
             programCount = client.getCustomProgramCount()
+            if (programCount == 0):
+                print("No custom programs found")
+                return
+
             print("Select a program:")
             for i in range(programCount):
                 print(str(i) + ": " + client.getCustomProgramTitle(i))

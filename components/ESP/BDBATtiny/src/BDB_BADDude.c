@@ -145,7 +145,7 @@ void BADDude_loop(){
 
             if(baddudeCallback == NULL){
                 BADDUDE_notAcknowledge();
-                return; //TODO: use a switch statement and use break
+                break;
             }
             BADDUDE_acknowledge();
 
@@ -166,7 +166,7 @@ void BADDude_loop(){
 
             if(baddudeCallback == NULL){
                 BADDUDE_notAcknowledge();
-                return; //TODO: use a switch statement and use break
+                break;
             }
             BADDUDE_acknowledge();
 
