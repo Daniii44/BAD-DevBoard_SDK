@@ -1,0 +1,8 @@
+# Hardware
+## Design Files
+This PCB was designed with CircuitMaker and has been published to the CircuitMaker Community. Use this link to get access to all the source files:
+
+https://workspace.circuitmaker.com/Projects/Details/DanielGruber/BAD-DevBoard
+
+## Hardware Errata
+There are a couple of small mistakes in the design of the board. All known ones are documented in [Hardware Errata.md](Hardware Errata.md) but may not have been fixed yet in the PCB design.

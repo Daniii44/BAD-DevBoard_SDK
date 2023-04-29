@@ -48,7 +48,8 @@
         "utility": "c",
         "bdb_attiny_reset.h": "c",
         "bdb_attiny_def.h": "c",
-        "bdb_baddude.h": "c"
+        "bdb_baddude.h": "c",
+        "esp_rom_sys.h": "c"
     },
     "cSpell.words": [
         "ATRESET",
@@ -74,5 +75,8 @@
         "STARTKEY",
         "TPIENTER",
         "TPIEXIT"
-    ]
+    ],
+    "idf.customExtraVars": {
+        "OPENOCD_SCRIPTS": "/Users/danielgruber/.espressif/tools/openocd-esp32/v0.11.0-esp32-20220411/openocd-esp32/share/openocd/scripts"
+    }
 }
